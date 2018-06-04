@@ -17,7 +17,8 @@
 
     * 방법 2
         * 기본 ViewController 에 ContainerView-AvPlayerview 추가해서 사용
-        * (진행중)
+        * AVPlayerViewController 사이즈 조절 시 애니메이션 추가했을 때, 영상 부분에는 애니메이션이 듣지 않음. 곤란하군.
+        * ContainerView 특징인건지는 아직 잘 모르겠지만, AVPlayerView에대한 탭 액션이 잡히지 않음. 위에 다른 뷰를 씌어서 해야함.
 
 
 
