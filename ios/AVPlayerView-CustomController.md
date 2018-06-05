@@ -18,7 +18,22 @@
     * 방법 2
         * 기본 ViewController 에 ContainerView-AvPlayerview 추가해서 사용
         * AVPlayerViewController 사이즈 조절 시 애니메이션 추가했을 때, 영상 부분에는 애니메이션이 듣지 않음. 곤란하군.
+            * 해결방안 생각 1. gravity 설정 resize로 변경 후, viewcontroller size/ 위치 변경 - 크기변경시 에니메이션 듣지 않음 뷰 이동은 해결됨
+            * 해결방안 2. containerView 대신 avplayerlayer사용.  - 애니메이션이 들어가지긴 하는데 속도는 조절 안됨
+                ~~~
+                 let playerItem = AVPlayerItem.init(url: path)
+                    let avplayer = AVPlayer.init(playerItem: playerItem)
+                    playerLayer = AVPlayerLayer.init(player: avplayer)
+                    playerLayer?.frame = CGRect(x: view.frame.origin.x , y: view.frame.origin.y, width: view.frame.width, height: view.frame.height)
+                    playerLayer?.videoGravity = AVLayerVideoGravity.resize
+                    view.layer.addSublayer(playerLayer!)
+                    avplayer.play()
+            * 눈치채지못하도록 애니메이션 속도를 매우 빠르게 해보자
+                    
         * ContainerView 특징인건지는 아직 잘 모르겠지만, AVPlayerView에대한 탭 액션이 잡히지 않음. 위에 다른 뷰를 씌어서 해야함.
+
+    * 방법 3
+        * ContainerView 대신에 AVPlayerLayer를 UIView에 추가해서 사용.
 
 
 
