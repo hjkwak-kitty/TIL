@@ -1,5 +1,8 @@
 # AVPlayerViewController
 
+ * AVPlayer
+    * play상태 delegate 없음. notification사용해야 함.
+
  * Custom Controller
     * 방법 1
         * AVPlayerViewController에 customControllerView 추가.
@@ -69,3 +72,9 @@
  * 볼륨조절을 커스톰해서 화면 오른쪽 세로 방향 스와이프시 조절되도록 했음 (버튼눌렀을 때도 해당 커스텀뷰 출력 - 노티피케이션 사용): 그랬더니 스와이프 빠르게했을때 노티가 뒤로 쌓여 실행됨.
     * %5 로 소리조절 되도록하니 수정됨.
     * slider자체 커스텀해도 될듯.
+    * 볼륨조절 화면 안보이게 하려면 무조건 addsubview로 volumeview 추가해야함.
+        ~~~
+        let frameVolume = CGRect(x: -1000 , y: -1000, width: 0, height: 0)
+        let viewVolume = MPVolumeView(frame: frameVolume)
+        ~~~
+* 아이폰 X 가로모드에서는 상태바 안나옴.
