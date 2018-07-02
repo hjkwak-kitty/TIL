@@ -1,4 +1,4 @@
-# sample code
+# sample code (okhttp3)
 ...
 public class AuthenticationInterceptor implements Interceptor {
 
