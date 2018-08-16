@@ -1,7 +1,7 @@
 
 * progurad 적용 시, gson이랑 사용하면 mapping 안되는 현상 있음.
 
-* option 1 (keep class)
+* option 1 (keep class) 난독화 제외
 
     // all classes in a package
 
@@ -24,3 +24,4 @@
 
     ~~~
 
+* innerClass 도 때때로 동일한 이슈가 발생한다고 함
