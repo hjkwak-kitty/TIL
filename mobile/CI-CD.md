@@ -1,5 +1,5 @@
 
-테스트앱 배포
+# 테스트앱 배포
 * Fabric: 현재 사용중
     * 장점
         * 파일 업데이트와 동시에 실시간으로 사용 가능
@@ -24,10 +24,12 @@
 
 
 * 고민
-*  CI 는 기존거 그대로 + fabric beta로 테스트 + fastlane supply 로 CD해주면 될거 같기도...?
-* 다른 CI/CD tool 은 뭐가 있지? https://instabug.com/blog/continuous-integration-tools/ : 종류 / 가격 정보만 있음. 사용하는거 확인하려면 검토가 필요함.
-* 다른데는 어떻게 하고 있지?
-    * https://academy.realm.io/kr/posts/continuous-delivery-for-android/
-    * http://tech.kakao.com/2016/04/21/mobil/
-    * http://woowabros.github.io/experience/2018/06/26/bros-cicd.html
-    * https://www.slideshare.net/isjang98/travisci-cicd-jenkins-for-android-94750798
+    *  CI 는 기존거 그대로 + fabric beta로 테스트 + fastlane supply 로 CD해주면 될거 같기도...?
+    * 다른 CI/CD tool 은 뭐가 있지? https://instabug.com/blog/continuous-integration-tools/ : 종류 / 가격 정보만 있음. 사용하는거 확인하려면 검토가 필요함.
+    * 다른데는 어떻게 하고 있지?
+        * https://academy.realm.io/kr/posts/continuous-delivery-for-android/
+        * http://tech.kakao.com/2016/04/21/mobil/
+        * http://woowabros.github.io/experience/2018/06/26/bros-cicd.html
+        * https://www.slideshare.net/isjang98/travisci-cicd-jenkins-for-android-94750798
+
+* [Gitlab CI 내용 정리](gitlab-CI.md)

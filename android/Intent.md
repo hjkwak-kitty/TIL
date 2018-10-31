@@ -1,5 +1,7 @@
 
 
+
+
 * 코틀린 예제
     - 명시적
     ~~~
@@ -39,7 +41,7 @@
     // Create intent to show the chooser dialog
     val chooser: Intent = Intent.createChooser(sendIntent, title)
 
-    // Verify the original intent will resolve to at least one activity
+    // 유효성 확인 Verify the original intent will resolve to at least one activity
     if (sendIntent.resolveActivity(packageManager) != null) {
         startActivity(chooser)
     }

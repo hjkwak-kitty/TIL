@@ -1,9 +1,9 @@
 * console에서 한글 깨질 떄 (mac)
-    >git config --global core.precomposeunicode true
-    git config --local core.precomposeunicode true
+    > git config --global core.precomposeunicode true
+    > git config --local core.precomposeunicode true
 
     > git config --global core.quotepath false
-    git config --local core.quotepath false
+    > git config --local core.quotepath false
 
 * core.precomposeUnicode
 

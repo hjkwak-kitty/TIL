@@ -1,4 +1,5 @@
-.gitlab-ci.yml Sample
+
+# .gitlab-ci.yml Sample
 
 image: openjdk:8-jdk  // 사용하는 도커이미지
 
@@ -49,39 +50,39 @@ unitTests: // 유닛 테스트
     - cd applefile
     - ./gradlew test
 
-functionalTests:// 아직 안해봄. 
+functionalTests:// 아직 안해봄
 
 
 
 
 
-패브릭 베타 연동 : 
-그라들 파일에 설정 : 앱 그라들에 
-안드로이드 부분에 이거 넣어주고 빌드할 때 ./gradlew assembleRelease crashlyticsUploadDistributionRelease 명령어 사용. 
-키암호설정 자동 입력 가능하게 해줘야 다른 설정 없이도 매끄럽게 됨.
+* 패브릭 베타 연동 : 
+  그라들 파일에 설정 : 앱 그라들에 
+  안드로이드 부분에 이거 넣어주고 빌드할 때 ./gradlew assembleRelease crashlyticsUploadDistributionRelease 명령어 사용. 
+  키암호설정 자동 입력 가능하게 해줘야 다른 설정 없이도 매끄럽게 됨.
 
-  productFlavors {
-        ext.betaDistributionReleaseNotes="Release Notes for this build."
-        ext.betaDistributionGroupAliases="Tester"
-//        ext.betaDistributionEmails="BetaUser@yourcompany.com, BetaUser2@yourcompany.com"
-//        ext.betaDistributionEmailsFilePath=beta_distribution_emails.txt
-//        ext.betaDistributionNotifications=true
-    } 이메일은 개인정보라 파일로 넣으면 좀 그럴거같아서 뺌
-
-
-
-빌드실패가 날 시, 꼬여서 그런 경우 gradlew clear 해주고 하면 됨
-
-Functional test 받아야할 것
-system-images;android-26;google_apis;x86
-
- platforms;android-26
-
- platform-tools
+    productFlavors {
+          ext.betaDistributionReleaseNotes="Release Notes for this build."
+          ext.betaDistributionGroupAliases="Tester"
+  //        ext.betaDistributionEmails="BetaUser@yourcompany.com, BetaUser2@yourcompany.com"
+  //        ext.betaDistributionEmailsFilePath=beta_distribution_emails.txt
+  //        ext.betaDistributionNotifications=true
+      } 이메일은 개인정보라 파일로 넣으면 좀 그럴거같아서 뺌
 
 
- extras;android;m2repository
+
+* 빌드실패가 날 시, 꼬여서 그런 경우 gradlew clear 해주고 하면 됨
+
+* Functional test 받아야할 것
+    system-images;android-26;google_apis;x86
+
+    platforms;android-26
+
+    platform-tools
 
 
-export ANDROID_HOME="android-sdk-linux"
-export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH"
+    extras;android;m2repository
+
+
+    export ANDROID_HOME="android-sdk-linux"
+    export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH"
