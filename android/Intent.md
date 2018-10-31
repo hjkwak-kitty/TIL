@@ -18,6 +18,10 @@
         type = "text/plain"
     }
 
+    val webIntent: Intent = Uri.parse("http://www.android.com").let { webpage ->
+    Intent(Intent.ACTION_VIEW, webpage)
+    }
+
     // Verify that the intent will resolve to an activity
     //설치된 앱 없으면 crash - 꼭 필요함.
     if (sendIntent.resolveActivity(packageManager) != null) {
@@ -39,4 +43,10 @@
     if (sendIntent.resolveActivity(packageManager) != null) {
         startActivity(chooser)
     }
+
+    val activities: List<ResolveInfo> = packageManager.queryIntentActivities(
+        intent,
+        PackageManager.MATCH_DEFAULT_ONLY
+    )
+    val isIntentSafe: Boolean = activities.isNotEmpty()
     ~~~
