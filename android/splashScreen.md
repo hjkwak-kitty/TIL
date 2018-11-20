@@ -71,7 +71,22 @@
         </activity>
         <activity android:name=".MainActivity" />
         ~~~
+  
+  * Android - Splash (Portrait)
+
+    - LDPI: 200 x 320
+
+    - MDPI: 320 x 480
+
+    - HDPI: 480 x 800
+
+    - XHDPI: 720 x 1280
+
+    - XXHDPI: 960 x 1600
+
+    - XXXHDPI: 1280 x 1920
 
 
 * 참고
     * [개선된로딩화면](http://dudmy.net/android/2017/04/09/improved-loading-screen/)
+    * [Android / iOS Icon & Splash Image Size 정리](https://asata.pe.kr/517)
