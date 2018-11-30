@@ -11,7 +11,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
-* limitations under the License.
+ * limitations under the License.
  */
 package com.example.exoplayer;
 
@@ -58,156 +58,163 @@ import java.util.UUID;
  */
 public class PlayerActivity extends AppCompatActivity {
 
-  PlayerView playerView;
-  ExoPlayer player;
-  boolean playWhenReady = true;
-  private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
+    PlayerView playerView;
+    ExoPlayer player;
+    boolean playWhenReady = true;
+    private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_player);
-    playerView = findViewById(R.id.video_view);
-    initializePlayer();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_player);
+        playerView = findViewById(R.id.video_view);
+        initializePlayer();
 
+    }
+
+
+/**
+ * dash 스트리밍 플레이어 설정
+ **/
+
+  private void initializeDashPlayer() {
+//    if (player == null) {
+      // a factory to create an AdaptiveVideoTrackSelection
+      TrackSelection.Factory adaptiveTrackSelectionFactory =
+              new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
+
+      player = ExoPlayerFactory.newSimpleInstance(
+              new DefaultRenderersFactory(this),
+              new DefaultTrackSelector(adaptiveTrackSelectionFactory),
+              new DefaultLoadControl());
+
+      playerView.setPlayer(player);
+      player.setPlayWhenReady(playWhenReady);
+
+    Uri uri = Uri.parse("http://e2276f23.ngrok.io/media/sample.mpd");
+      MediaSource mediaSource = buildDashMediaSource(uri);
+      player.prepare(mediaSource, true, false);
+
+//    }
   }
 
+  private MediaSource buildDashMediaSource(Uri uri) {
+    DataSource.Factory manifestDataSourceFactory = new DefaultHttpDataSourceFactory("ua");
+    DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER));
+    return new DashMediaSource.Factory(dashChunkSourceFactory,
+            manifestDataSourceFactory).createMediaSource(uri);
+  }
 
+    /**
+     * 로컬 mp4파일 drm설정
+     **/
+    DefaultTrackSelector trackSelector;
+    EventLogger eventLogger;
+    Handler mainHandler;
 
-//  private void initializePlayer() {
-////    if (player == null) {
-//      // a factory to create an AdaptiveVideoTrackSelection
-//      TrackSelection.Factory adaptiveTrackSelectionFactory =
-//              new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
-//
-//      player = ExoPlayerFactory.newSimpleInstance(
-//              new DefaultRenderersFactory(this),
-//              new DefaultTrackSelector(adaptiveTrackSelectionFactory),
-//              new DefaultLoadControl());
-//
-//      playerView.setPlayer(player);
-//      player.setPlayWhenReady(playWhenReady);
-//
-//    Uri uri = Uri.parse("http://e2276f23.ngrok.io/media/sample.mpd");
-//      MediaSource mediaSource = buildMediaSource(uri);
-//      player.prepare(mediaSource, true, false);
-//
-////    }
-//  }
-//
-//  private MediaSource buildMediaSource(Uri uri) {
-//    DataSource.Factory manifestDataSourceFactory = new DefaultHttpDataSourceFactory("ua");
-//    DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER));
-//    return new DashMediaSource.Factory(dashChunkSourceFactory,
-//            manifestDataSourceFactory).createMediaSource(uri);
-//  }
+    private void initializePlayer() {
+        TrackSelection.Factory adaptiveTrackSelectionFactory =
+                new AdaptiveTrackSelection.Factory(new DefaultBandwidthMeter());
+        trackSelector = new DefaultTrackSelector(adaptiveTrackSelectionFactory);
+        eventLogger = new EventLogger(trackSelector);
+        mainHandler = new Handler();
+        @DefaultRenderersFactory.ExtensionRendererMode int extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
+        DrmSessionManager<FrameworkMediaCrypto> drmSessionManager = null;
+        try {
+            drmSessionManager = buildDrmSessionManager(this);
+        } catch (UnsupportedDrmException e) {
+            e.printStackTrace();
+        }
+        DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(this,
+                drmSessionManager, extensionRendererMode);
 
+        player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector);
 
-  DefaultTrackSelector trackSelector;
-  EventLogger eventLogger;
-  Handler mainHandler;
+        playerView.setPlayer(player);
 
-  private void initializePlayer() {
-    TrackSelection.Factory adaptiveTrackSelectionFactory =
-            new AdaptiveTrackSelection.Factory(new DefaultBandwidthMeter());
-    trackSelector = new DefaultTrackSelector(adaptiveTrackSelectionFactory);
-    eventLogger = new EventLogger(trackSelector);
-    mainHandler = new Handler();
-    @DefaultRenderersFactory.ExtensionRendererMode int extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
-    DrmSessionManager<FrameworkMediaCrypto> drmSessionManager = null;
-    try {
-      drmSessionManager = buildDrmSessionManager(this);
-    } catch (UnsupportedDrmException e) {
-      e.printStackTrace();
-    }
-    DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(this,
-            drmSessionManager, extensionRendererMode);
-
-    player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector);
-
-    playerView.setPlayer(player);
-
-    DataSource.Factory dataSourceFactory = getDataSourceFactory(this);
-    MediaSource contentMediaSource =
-            new ExtractorMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(dataSourceFactory.createDataSource().getUri());
+        DataSource.Factory dataSourceFactory = getDataSourceFactory(this);
+        MediaSource contentMediaSource =
+                new ExtractorMediaSource.Factory(dataSourceFactory)
+                        .createMediaSource(dataSourceFactory.createDataSource().getUri());
 //    player.addListener(new PlayerEventListener());
-    player.addListener(eventLogger);
+        player.addListener(eventLogger);
 //    player.addMetadataOutput(eventLogger);
 //    player.addAudioDebugListener(eventLogger);
 //    player.addVideoDebugListener(eventLogger);
 //    player.seekTo(contentPosition);
-    player.setPlayWhenReady(true);
-    player.prepare(contentMediaSource);
+        player.setPlayWhenReady(true);
+        player.prepare(contentMediaSource);
 
-  }
-
-  private DataSource.Factory getDataSourceFactory(Context context) {
-    DataSource.Factory dataSourceFactory = null;
-    DataSpec dataSpec = new DataSpec(RawResourceDataSource.buildRawResourceUri(R.raw.h264_360));
-    final RawResourceDataSource rawResourceDataSource = new RawResourceDataSource(context);
-    try {
-      rawResourceDataSource.open(dataSpec);
-    } catch (RawResourceDataSource.RawResourceDataSourceException e) {
-      e.printStackTrace();
     }
 
-    dataSourceFactory = new DataSource.Factory() {
-      @Override
-      public DataSource createDataSource() {
-        return rawResourceDataSource;
-      }
-    };
-    return dataSourceFactory;
-  }
+    private DataSource.Factory getDataSourceFactory(Context context) {
+        DataSource.Factory dataSourceFactory = null;
+        DataSpec dataSpec = new DataSpec(RawResourceDataSource.buildRawResourceUri(R.raw.h264_360));
+        final RawResourceDataSource rawResourceDataSource = new RawResourceDataSource(context);
+        try {
+            rawResourceDataSource.open(dataSpec);
+        } catch (RawResourceDataSource.RawResourceDataSourceException e) {
+            e.printStackTrace();
+        }
 
-  String key = "69eaa802a6763af979e8d1940fb88392";
-  String base64EncodedKey = "aeqoAqZ2Ovl56NGUD7iDkg";
-  String keyId = "abba271e8bcf552bbd2e86a434a9a5d9";
-  String base64EncodedKeyId = "q7onHovPVSu9LoakNKml2Q";
+        dataSourceFactory = new DataSource.Factory() {
+            @Override
+            public DataSource createDataSource() {
+                return rawResourceDataSource;
+            }
+        };
+        return dataSourceFactory;
+    }
 
-  private DrmSessionManager<FrameworkMediaCrypto> buildDrmSessionManager(Context context) throws UnsupportedDrmException {
-    DrmSessionManager<FrameworkMediaCrypto> drmSessionManager = null;
-    Intent intent = ((Activity) context).getIntent();
-    String drmScheme = "clearkey";
-    UUID uuid = C.CLEARKEY_UUID;
+    String key = "69eaa802a6763af979e8d1940fb88392";
+    String base64EncodedKey = "aeqoAqZ2Ovl56NGUD7iDkg";
+    String keyId = "abba271e8bcf552bbd2e86a434a9a5d9";
+    String base64EncodedKeyId = "q7onHovPVSu9LoakNKml2Q";
 
-    LocalMediaDrmCallback drmCallback =
-            new LocalMediaDrmCallback(
-                    "{\"keys\":[{\"kty\":\"oct\",\"k\":\"aeqoAqZ2Ovl56NGUD7iDkg\",\"kid\":\"q7onHovPVSu9LoakNKml2Q\"}],\"type\":\"temporary\"}".getBytes());
-    FrameworkMediaDrm  fmDrm = FrameworkMediaDrm.newInstance(uuid);
-    drmSessionManager = new DefaultDrmSessionManager<FrameworkMediaCrypto>(
-            uuid,
-            fmDrm,
-            drmCallback,
-            null,
-            mainHandler,
-            eventLogger);
-    return drmSessionManager;
-  }
+    private DrmSessionManager<FrameworkMediaCrypto> buildDrmSessionManager(Context context) throws UnsupportedDrmException {
+        DrmSessionManager<FrameworkMediaCrypto> drmSessionManager = null;
+        Intent intent = ((Activity) context).getIntent();
+        String drmScheme = "clearkey";
+        UUID uuid = C.CLEARKEY_UUID;
 
-//  MP4기본 재생 설정 //
-  private void initializeMp4Player() {
-    player = ExoPlayerFactory.newSimpleInstance(
-            new DefaultRenderersFactory(this),
-            new DefaultTrackSelector(), new DefaultLoadControl());
+        LocalMediaDrmCallback drmCallback =
+                new LocalMediaDrmCallback(
+                        "{\"keys\":[{\"kty\":\"oct\",\"k\":\"aeqoAqZ2Ovl56NGUD7iDkg\",\"kid\":\"q7onHovPVSu9LoakNKml2Q\"}],\"type\":\"temporary\"}".getBytes());
+        FrameworkMediaDrm fmDrm = FrameworkMediaDrm.newInstance(uuid);
+        drmSessionManager = new DefaultDrmSessionManager<FrameworkMediaCrypto>(
+                uuid,
+                fmDrm,
+                drmCallback,
+                null,
+                mainHandler,
+                eventLogger);
+        return drmSessionManager;
+    }
 
-    playerView.setPlayer(player);
 
-    player.setPlayWhenReady(playWhenReady);
+/**
+* mp4기본 재생 플레이어 설정
+**/    private void initializeMp4Player() {
+        player = ExoPlayerFactory.newSimpleInstance(
+                new DefaultRenderersFactory(this),
+                new DefaultTrackSelector(), new DefaultLoadControl());
 
-    Uri uri = Uri.parse("http://e2276f23.ngrok.io/media/sample.mp4");
-    MediaSource mediaSource = buildMediaSourceMp4(uri);
-    player.prepare(mediaSource, true, false);
+        playerView.setPlayer(player);
+
+        player.setPlayWhenReady(playWhenReady);
+
+        Uri uri = Uri.parse("http://e2276f23.ngrok.io/media/sample.mp4");
+        MediaSource mediaSource = buildMediaSourceMp4(uri);
+        player.prepare(mediaSource, true, false);
 //    player.seekTo(currentWindow, playbackPosition);
-  }
+    }
 
-  private MediaSource buildMediaSourceMp4(Uri uri) {
-    return new ExtractorMediaSource.Factory(
-            new DefaultHttpDataSourceFactory("exoplayer-codelab")).
-            createMediaSource(uri);
-  }
+    private MediaSource buildMediaSourceMp4(Uri uri) {
+        return new ExtractorMediaSource.Factory(
+                new DefaultHttpDataSourceFactory("exoplayer-codelab")).
+                createMediaSource(uri);
+    }
 
-  //MP4 기본 재생 설정 완료//
+    //MP4 기본 재생 설정 완료//
 
 }
