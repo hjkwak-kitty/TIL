@@ -12,7 +12,10 @@
 ## 파일 암호화
 테스트 파일: example.mp4
 
-./packager-osx in=example.mp4,stream=video,output=h264_360.mp4 --enable_raw_key_encryption --keys label=:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392 --clear_lead 0
+packager in=example.mp4,stream=video,output=h264_360.mp4 --enable_raw_key_encryption --keys label=:key_id=abba271e8bcf552bbd2e86a434a9a5d9:key=69eaa802a6763af979e8d1940fb88392 --clear_lead 0
+
+
+packager 'input=example.mp4,stream=video,init_segment=1_v_seg-0.mp4,segment_template=1_v_seg-$Number$.mp4' 'input=example.mp4,stream=audio,init_segment=1_a_seg-0.mp4,segment_template=1_a_seg-$Number$.mp4' --mpd_output 1_seg_e.mpd --segment_duration 10 --enable_fixed_key_encryption --key "69eaa802a6763af979e8d1940fb88392" --key_id "abba271e8bcf552bbd2e86a434a9a5d9"
 
 ## exoplayer2
 
