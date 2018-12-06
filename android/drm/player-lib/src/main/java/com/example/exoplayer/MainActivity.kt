@@ -26,15 +26,20 @@ class MainActivity : AppCompatActivity() {
     private const val DASH_URL = "${BuildConfig.END_POINT}/sample.mpd"
     private const val DRM_DASH_URL = "${BuildConfig.END_POINT}/test2.mpd"
     private const val DRM_HLS_URL = "${BuildConfig.END_POINT}//master.m3u8"
+
+    private const val key = "69eaa802a6763af979e8d1940fb88392"
+    private const val base64EncodedKey = "aeqoAqZ2Ovl56NGUD7iDkg"
+    private const val keyId = "abba271e8bcf552bbd2e86a434a9a5d9"
+    private const val base64EncodedKeyId = "q7onHovPVSu9LoakNKml2Q"
   }
 
   enum class StreamingType {
-    DASH, HLS
+    DASH, HLS, MP4
   }
 
   private val handler = Handler()
   private val bandwidthMeter = DefaultBandwidthMeter()
-  private val drmCallback =  MyDRMCallBack("q7onHovPVSu9LoakNKml2Q","aeqoAqZ2Ovl56NGUD7iDkg") //HttpMediaDrmCallback(DRM_LICENSE_URL, DefaultHttpDataSourceFactory(USER_AGENT))
+  private val drmCallback =  MyDRMCallBack(base64EncodedKeyId, base64EncodedKey)
   private val drmSessionManager = DefaultDrmSessionManager(C.CLEARKEY_UUID,FrameworkMediaDrm.newInstance(C.CLEARKEY_UUID), drmCallback, null, handler, null)
   private val selector = DefaultTrackSelector()
   private val loadControl = DefaultLoadControl()
@@ -42,13 +47,18 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
+
     val player = initPlayer(isDrm = true, type = StreamingType.DASH)
+
     player.playWhenReady = true
   }
 
   private fun initPlayer(isDrm: Boolean, type: StreamingType): SimpleExoPlayer {
     val renderersFactory = if (isDrm)
-      DefaultRenderersFactory(this, drmSessionManager) else DefaultRenderersFactory(this)
+      DefaultRenderersFactory(this, drmSessionManager)
+    else DefaultRenderersFactory(this)
+
+
     val player = ExoPlayerFactory.newSimpleInstance(renderersFactory, selector, loadControl)
 
     val playerView = findViewById<PlayerView>(R.id.player_view)
@@ -58,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         DefaultHttpDataSourceFactory(USER_AGENT, bandwidthMeter)
     )
     val mediaSource = when (type) {
+      StreamingType.MP4 -> createHlsSource(if (isDrm) DRM_HLS_URL else MP4_URL, dataSourceFactory)
       StreamingType.DASH ->
         createDashSource(if (isDrm) DRM_DASH_URL else DASH_URL, dataSourceFactory)
       StreamingType.HLS -> createHlsSource(if (isDrm) DRM_HLS_URL else HLS_URL, dataSourceFactory)

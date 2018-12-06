@@ -89,7 +89,6 @@ public class PlayerActivity extends AppCompatActivity {
 
 
 
-
     /**
      * dash 스트리밍 플레이어 설정
      **/
@@ -127,22 +126,16 @@ public class PlayerActivity extends AppCompatActivity {
     /**
      * 로컬 mp4파일 drm설정
      **/
+    DefaultTrackSelector trackSelector;
+    EventLogger eventLogger;
+    Handler mainHandler;
 
-    private Handler handler = new Handler();
-    private DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-    private MyDRMCallBack myDRMCallBack = new MyDRMCallBack("q7onHovPVSu9LoakNKml2Q", "aeqoAqZ2Ovl56NGUD7iDkg"); //HttpMediaDrmCallback(DRM_LICENSE_URL, DefaultHttpDataSourceFactory(USER_AGENT))
-    //    private DefaultDrmSessionManager defaultDrmSessionManager = new DefaultDrmSessionManager(C.CLEARKEY_UUID, FrameworkMediaDrm.newInstance(C.CLEARKEY_UUID), drmCallback, null, handler, null);
-    private DefaultTrackSelector selector = new DefaultTrackSelector();
-    private DefaultLoadControl loadControl = new DefaultLoadControl();
-
-
-    private ExoPlayer initPlayer(boolean isDrm, StreamingType type){
-
-    }
     private void initializePlayer() {
         TrackSelection.Factory adaptiveTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(new DefaultBandwidthMeter());
         trackSelector = new DefaultTrackSelector(adaptiveTrackSelectionFactory);
+        eventLogger = new EventLogger(trackSelector);
+        mainHandler = new Handler();
         @DefaultRenderersFactory.ExtensionRendererMode int extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER;
         DrmSessionManager<FrameworkMediaCrypto> drmSessionManager = null;
         try {
@@ -151,7 +144,7 @@ public class PlayerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(this,
-                drmSessionManager, extensionRendererMode);
+                drmSessionManager);
 
         player = ExoPlayerFactory.newSimpleInstance(renderersFactory, trackSelector);
 
